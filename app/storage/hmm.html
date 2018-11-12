@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title><?php echo "HMM"; ?></title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+		<style type="text/css">
+			body
+			{
+				padding-top:15%;
+				background: #FAFAFA;
+			}
+
+			#_container:hover
+			{
+				box-shadow: 0 0 10px rgba(0,0,0,0.6);
+				-moz-box-shadow: 0 0 10px rgba(0,0,0,0.6);
+				-webkit-box-shadow: 0 0 10px rgba(0,0,0,0.6);
+				-o-box-shadow: 0 0 10px rgba(0,0,0,0.6);
+			}
+
+			.flex-container {
+			  display: flex;
+			  flex-direction: row;
+			  background-color: DodgerBlue;
+			}
+
+			.flex-container > div {
+			  background-color: #f1f1f1;
+
+			  margin: 10px;
+			  text-align: center;
+			  line-height: 75px;
+			  font-size: 30px;
+			}
+
+			.item
+			{
+				border: 1px #000 solid;
+				padding : 3px;
+			}
+
+			.word
+			{
+				padding : 3px;
+
+			}
+			.tag
+			{
+
+				padding : 3px;
+			}
+		</style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		</head>
+	<body>
+		<div class="container" id="container_id"  >
+
+				<textarea rows="4" cols="100" id="message">
+				</textarea>
+				<button type="button" id="" onClick="show()" >Click Me!</button>
+		</div>
+
+
+
+		<script>
+			function setDefault()
+			{
+				var str = '';
+				str += '<textarea rows="4" cols="100" id="message">'+
+				'</textarea>'+
+				'<button type="button" id="" onClick="show()" >Click Me!</button>';
+				$("#container_id").empty().append(str);
+			}
+
+			function show()
+			{
+				var message = $('textarea#message').val();
+				var words = message.split(" ");
+
+				var str='<div class="flex-container" onClick="setDefault()">';
+				tags = ['Noun', 'Pronoun', 'Conjunction'];
+
+				for(let i=0;i<words.length;i++)
+					str +='<div class="item" id="tagging'+(i+1)
+						+'"><div class="word" id="word'+(i+1)+'">'+words[i]+'</div>'
+						+'<div   class="tag" id="tag'+(i+1)+'">'+tags[i]+'</div></div>';
+
+
+				$("#container_id").empty().append(str+'</div>');
+
+
+				/*
+				var formData = {
+					'message'       :  message
+				};
+				console.log(formData);
+				$.ajax({
+					url: "hitters/LoadResult.php",
+					type: "POST",
+					data: formData,
+					success: function(d)
+					{
+						var obj = JSON.parse(d);
+
+						$("#homeContent").empty().append(resultView(sem_no,obj)); //
+						//customSelectFunction();
+						$("#semester_no_result").val(sem_no);
+
+					}
+				});
+
+				*/
+
+
+
+			}
+
+
+		</script>
+	</body>
+</html>
