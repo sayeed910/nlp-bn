@@ -1,6 +1,9 @@
 <template>
   <v-content>
     <v-toolbar fixed dark color="primary">
+      <v-btn icon dark @click.native="$router.go(-1)">
+              <v-icon>keyboard_backspace</v-icon>
+            </v-btn>
       <v-toolbar-title>Spell Checker</v-toolbar-title>
       <v-spacer></v-spacer>
 
@@ -9,13 +12,16 @@
       <v-layout justify-center align-center>
         <v-flex md7>
           <v-layout justify-end>
+            <v-btn color="indigo" :loading="checking" dark class="mt-3" @click="check">Fix</v-btn>
             <v-menu
                     v-model="menu"
                     :close-on-content-click="false"
                     :nudge-width="200"
+                    :position-x="x"
+                    :position-y="y"
                     offset-x
             >
-              <v-btn color="indigo" dark class="mt-3" @click="check" slot="activator">Fix</v-btn>
+
 
               <v-card>
                 <v-window v-model="step">
@@ -105,12 +111,17 @@
                 fixedByDialog: false,
                 checking: false,
                 menu: false,
-                step: 1
+                step: 1,
+                x:1,
+                y:1,
             }
         },
         methods: {
-            check() {
+            check(event) {
                 this.checking = true;
+                event.preventDefault();
+                this.x = event.clientX;
+                this.y = event.clientY;
                 $backend.post('/checker', {text: this.text})
                     .then(({data}) => {
                         console.log(data);
@@ -124,8 +135,11 @@
                                 return undefined
                             }
                         }));
+
                         this.checking = false;
+                        if (this.corrections.length === 0) return;
                         this.step=1;
+                        this.menu=true;
                     })
             },
             fix(wordIdx, fixIdx, correctionIdx) {
@@ -146,24 +160,7 @@
         },
         watch: {
             text(value) {
-                const check = _.debounce((text) => {
-                    this.checking = true;
 
-
-                }, 1500, {leading: true});
-
-                //changed by fix dialog
-                if (this.fixedByDialog) {
-                    this.fixedByDialog = false;
-                    return true;
-                }
-
-                //Already sent a request
-                if (this.checking) {
-                    return true;
-                }
-
-                check(value);
 
             }
 

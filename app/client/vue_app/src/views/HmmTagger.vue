@@ -1,6 +1,9 @@
 <template>
   <v-content>
     <v-toolbar fixed dark color="primary">
+      <v-btn icon dark @click.native="$router.go(-1)">
+              <v-icon>keyboard_backspace</v-icon>
+            </v-btn>
       <v-toolbar-title>HMM Tagger</v-toolbar-title>
       <v-spacer></v-spacer>
 

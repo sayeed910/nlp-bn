@@ -4,14 +4,28 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
-flask-cors = "*"
-flask-compress = "*"
-werkzeug = "*"
-gunicorn = "*"
-flask-restplus = "*"
-pandas = "*"
-numpy = "*"
+aniso8601       = "*"
+click         =   "*"
+Flask           = "*"
+Flask-Compress  = "*"
+Flask-Cors      = "*"
+flask-restplus   ="*"
+gunicorn         ="*"
+itsdangerous   =  "*"
+Jinja2         =  "*"
+jsonschema      = "*"
+MarkupSafe    =   "*"
+numpy            ="*"
+pandas           ="*"
+pip            =  "*"
+python-dateutil = "*"
+pytz             ="*"
+setuptools       ="*"
+six              ="*"
+Werkzeug         ="*"
+wheel            ="*"
+
+
 
 [dev-packages]
 
