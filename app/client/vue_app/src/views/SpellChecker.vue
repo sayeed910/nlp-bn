@@ -15,16 +15,16 @@
                     :nudge-width="200"
                     offset-x
             >
-              <v-btn color="indigo" dark class="mt-3" @click="step=1" slot="activator">Fix</v-btn>
+              <v-btn color="indigo" dark class="mt-3" @click="check" slot="activator">Fix</v-btn>
 
               <v-card>
                 <v-window v-model="step">
                   <v-window-item :value="1">
-                  <v-card>
-                  <v-card-actions>
-                  <v-btn @click="step++" flat>Start</v-btn>
-                  </v-card-actions>
-                  </v-card>
+                    <v-card>
+                      <v-card-actions>
+                        <v-btn :disable="checking" @click="step++" flat>Start</v-btn>
+                      </v-card-actions>
+                    </v-card>
                   </v-window-item>
                   <!--<v-window-item :value="2">-->
                   <!--<v-card>abcde-->
@@ -51,7 +51,8 @@
                       <v-card-text>
 
                         <v-list>
-                          <v-list-tile @click="fix(correction.index, idx, index)" v-for="(word, idx) in correction.fixes"
+                          <v-list-tile @click="fix(correction.index, idx, index)"
+                                       v-for="(word, idx) in correction.fixes"
                                        :key="idx">
                             <v-list-tile-title>{{word}}</v-list-tile-title>
                           </v-list-tile>
@@ -93,6 +94,7 @@
 <script>
     import faker from 'faker';
     import _ from 'lodash';
+    import $backend from '../backend'
 
     export default {
         name: "SpellChecker",
@@ -107,6 +109,25 @@
             }
         },
         methods: {
+            check() {
+                this.checking = true;
+                $backend.post('/checker', {text: this.text})
+                    .then(({data}) => {
+                        console.log(data);
+                        const words = this.text.split(" ");
+                        const corrections = data.corrections;
+
+                        this.corrections = _.compact(corrections.map((value, index, arr) => {
+                            if (value !== 'OK') {
+                                return {word: words[index], index: index, fixes: value}
+                            } else {
+                                return undefined
+                            }
+                        }));
+                        this.checking = false;
+                        this.step=1;
+                    })
+            },
             fix(wordIdx, fixIdx, correctionIdx) {
                 const words = this.text.split(" ");
                 words[wordIdx] = this.corrections[correctionIdx].fixes[fixIdx];
@@ -114,8 +135,9 @@
                 this.text = words.join(" ");
                 this.ignore();
             },
-            ignore(){
-                if (this.step >= this.corrections.length){
+            ignore() {
+                console.log(this.step);
+                if (this.step >= this.corrections.length + 1) {
                     this.menu = false;
                 } else {
                     this.step++;
@@ -124,31 +146,20 @@
         },
         watch: {
             text(value) {
-
-
                 const check = _.debounce((text) => {
-                    console.log("checking for error.");
-                    const words = text.split(" ");
-                    const corrections = [];
-                    for (let word of words) {
-                        if (Math.random() < .5) {
-                            corrections.push(undefined)
-                        } else {
-                            corrections.push(faker.lorem.words(5));
-                        }
-                    }
+                    this.checking = true;
 
-
-                    this.corrections = _.compact(corrections.map((value, index, arr) => {
-                        if (value) {
-                            return {word: words[index], index: index, fixes: value.split(" ")}
-                        }
-                    }));
 
                 }, 1500, {leading: true});
 
+                //changed by fix dialog
                 if (this.fixedByDialog) {
                     this.fixedByDialog = false;
+                    return true;
+                }
+
+                //Already sent a request
+                if (this.checking) {
                     return true;
                 }
 

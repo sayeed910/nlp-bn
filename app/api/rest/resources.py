@@ -20,6 +20,7 @@ from werkzeug.utils import secure_filename
 
 import json
 from . import hmm
+from .spellchecker import checkParagraph, _head
 
 
 
@@ -31,3 +32,12 @@ class Hmm(BaseResource):
         data = json.loads(request.data)
         return {'status': 'OK', 'tags': hmm.findtags(data['text'])}
 
+
+@api_rest.route('/checker')
+class SpellChecker(BaseResource):
+    def get(self):
+        return {'status': 'OK'}
+
+    def post(self):
+        data = json.loads(request.data)
+        return {'status': 'OK', 'corrections': checkParagraph(data['text'], _head)}
